@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aplikasi Kasir</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+}
+
+header {
+    background: #2563eb;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    padding: 15px;
+    max-width: 700px;
+    margin: auto;
+}
+
+.box {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+}
+
+.produk {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+button {
+    border: none;
+    padding: 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    background: #2563eb;
+    color: white;
+    font-size: 15px;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.bayar {
+    background: #16a34a;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.hapus {
+    background: #dc2626;
+}
+
+.total {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🛒 Aplikasi Kasir</h1>
+    <p>Kasir Warung Sederhana</p>
+</header>
+
+<div class="container">
+
+<div class="box">
+
+<h2>Daftar Produk</h2>
+
+<div class="produk">
+
+<div class="card">
+<h3>Indomie</h3>
+<p>Rp 3.500</p>
+<button onclick="tambah('Indomie',3500)">Tambah</button>
+</div>
+
+<div class="card">
+<h3>Air Mineral</h3>
+<p>Rp 5.000</p>
+<button onclick="tambah('Air Mineral',5000)">Tambah</button>
+</div>
+
+<div class="card">
+<h3>Roti</h3>
+<p>Rp 8.000</p>
+<button onclick="tambah('Roti',8000)">Tambah</button>
+</div>
+
+<div class="card">
+<h3>Kopi</h3>
+<p>Rp 10.000</p>
+<button onclick="tambah('Kopi',10000)">Tambah</button>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>Keranjang</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Produk</th>
+<th>Qty</th>
+<th>Total</th>
+<th>Aksi</th>
+</tr>
+
+</thead>
+
+<tbody id="keranjang">
+
+</tbody>
+
+</table>
+
+
+<div class="total">
+
+Total: Rp <span id="total">0</span>
+
+</div>
+
+
+<h3>Pembayaran</h3>
+
+<input
+type="number"
+id="uang"
+placeholder="Masukkan uang pembayaran">
+
+
+<button class="bayar" onclick="bayar()">
+
+💰 BAYAR
+
+</button>
+
+
+<h3 id="hasil"></h3>
+
+</div>
+
+</div>
+
+
+<script>
+
+let keranjang = [];
+
+
+function tambah(nama, harga) {
+
+let produk = keranjang.find(
+item => item.nama === nama
+);
+
+if(produk){
+
+produk.qty++;
+
+}else{
+
+keranjang.push({
+
+nama:nama,
+harga:harga,
+qty:1
+
+});
+
+}
+
+tampilkan();
+
+}
+
+
+
+function tampilkan(){
+
+let tabel =
+document.getElementById("keranjang");
+
+tabel.innerHTML="";
+
+let total=0;
+
+
+keranjang.forEach((item,index)=>{
+
+let subtotal =
+item.harga * item.qty;
+
+total += subtotal;
+
+
+tabel.innerHTML += `
+
+<tr>
+
+<td>${item.nama}</td>
+
+<td>
+
+<button onclick="kurang(${index})">-</button>
+
+${item.qty}
+
+<button onclick="tambahQty(${index})">+</button>
+
+</td>
+
+<td>
+
+Rp ${subtotal.toLocaleString("id-ID")}
+
+</td>
+
+<td>
+
+<button
+class="hapus"
+onclick="hapus(${index})">
+
+X
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+document.getElementById("total").innerText =
+total.toLocaleString("id-ID");
+
+}
+
+
+
+function tambahQty(index){
+
+keranjang[index].qty++;
+
+tampilkan();
+
+}
+
+
+
+function kurang(index){
+
+if(keranjang[index].qty > 1){
+
+keranjang[index].qty--;
+
+}else{
+
+keranjang.splice(index,1);
+
+}
+
+tampilkan();
+
+}
+
+
+
+function hapus(index){
+
+keranjang.splice(index,1);
+
+tampilkan();
+
+}
+
+
+
+function bayar(){
+
+let total = keranjang.reduce(
+
+(jumlah,item)=>{
+
+return jumlah +
+(item.harga * item.qty);
+
+},0
+
+);
+
+
+let uang =
+parseInt(
+document.getElementById("uang").value
+);
+
+
+if(!uang){
+
+alert("Masukkan uang pembayaran!");
+
+return;
+
+}
+
+
+if(uang < total){
+
+alert("Uang tidak cukup!");
+
+return;
+
+}
+
+
+let kembalian =
+uang-total;
+
+
+document.getElementById("hasil").innerText =
+
+"Kembalian: Rp " +
+
+kembalian.toLocaleString("id-ID");
+
+}
+
+</script>
+
+</body>
+</html>
